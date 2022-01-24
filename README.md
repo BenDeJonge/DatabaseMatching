@@ -5,6 +5,7 @@ Using a PhoneNumber dataclass, all relevant attributes of a number are tracked a
 - found in the database
 - missing in the database 
 - incorrectly formatted number.
+- 
 The results are exported as a csv with five columns: 
 - number (the number)
 - correct (if the number formatted correctly)
