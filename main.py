@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Jan 21 23:49:50 2022
-
 @author: dejong71
 """
 
@@ -20,24 +19,14 @@ def floor(x: int, div: int):
 
 # ------------------------------------------------------------------------------
 
-def verify_number(number : str):
-    split = number.split('+')[-1]
-    try:
-        temp = int(split[2:])
-        return True if temp >= 1e7 else False
-    except ValueError:
-        return False
-
-# ------------------------------------------------------------------------------
-
 def format_number(number : str):
     '''Method to filter out numbers shorter than 8 digits.'''
     split = number.split('+')[-1]
     try:
         temp = int(split[2:])
-        return temp
+        return (True, temp) if temp >= 1e7 else (False, temp)
     except ValueError:
-        return split
+        return (False, split)
         
 # ------------------------------------------------------------------------------
 
@@ -69,20 +58,19 @@ for sheet in sheets:
     df = pd.read_excel(path_dbase, sheet)
     df['Sheet'] = sheet
     frames.append(df)
-dbase_in = pd.concat(frames, ignore_index=True)
+dbase = pd.concat(frames, ignore_index=True)
 # Clean the input numbers.
 path_numbers = os.path.join(folder, 'I-Mens-Gzat.xlsx')
 numbers = pd.read_excel(path_numbers)
-numbers['Correct'] = numbers['Access number'].apply(verify_number)
-numbers['Formatted'] = numbers['Access number'].apply(format_number)
+numbers[['Correct', 'Formatted']] = pd.DataFrame(
+    numbers['Access number'].apply(format_number).to_list(),
+    index=numbers.index)
 # Keep track of previously found numbers.
 found = set()
 # Save numbers in three categories.
 numbers_found = {}
 numbers_missing = {}
 numbers_wrong = {}
-
-dbase = dbase_in.copy()
 
 # Loop over all available group sizes of numbers from large to small.
 for size in dbase.Size.unique()[::-1]:    
@@ -111,10 +99,10 @@ for size in dbase.Size.unique()[::-1]:
     for number in numbers.Formatted[numbers.Correct == False]:
         numbers_wrong[number] = PhoneNumber(
             number, False, None, None, None, None)
+        
 # Save as csv.
 with open('output.csv', 'w') as f:
     f.write('number,correct,found,table,group,vms\n')
     for numberset in numbers_found, numbers_missing, numbers_wrong:
         for number in numberset.values():
-            f.write(
-                f'{number.number},{number.correct},{number.found},{number.table},{number.group},{number.flag}\n')
+            f.write(','.join([str(number.__dict__[i]) for i in number.__dict__.keys()]) + '\n')
