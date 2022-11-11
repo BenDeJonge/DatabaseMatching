@@ -1,5 +1,5 @@
 # DatabaseMatching
-A basic Python script to match a list of numbers to database, both in .xlsx format.
+A basic Python script to match a list of numbers to database, both in .xlsx format. This was written freelance for a telecom employee who reached out to me.
 Numbers are being checked for correctness and loaded into a Pandas dataframe. The matching databases are also loaded into Pandas dataframes and concatenated.
 Using a PhoneNumber dataclass, all relevant attributes of a number are tracked and the numbers are saved in one of three categories:
 - found in the database
