@@ -24,9 +24,11 @@ With the following abbreviations:
 #-- I M P O R T S -------------------------------------------------------------
 import openpyxl as xl
 from re import split
+import tkinter as tk
+from tkinter.filedialog import askopenfilenames
 
 #-- I N P U T S ---------------------------------------------------------------
-xlsx_paths = ('process_master_sheet_1.xlsx', 'process_master_sheet_2.xlsx')
+
 training_col = 'A'
 follower_col = 'B'
 viewing_col = 'C'
@@ -35,10 +37,26 @@ start_row = 2
 output_file_name = 'test.xlsx'
 
 #-- C O N S T A N T S ---------------------------------------------------------
+
 # Tracking all existing jobs and trainings.
 all_training_types = ('train', 'watch')
 jobs : dict = {}
 all_trainings : dict = {}
+
+# Tkinter dialog to select files.
+root = tk.Tk()
+# Hiding root.
+root.withdraw()
+root.update()
+# Giving window focus.
+root.deiconify()
+root.lift()
+root.focus_force()
+# Getting paths.
+xlsx_paths = askopenfilenames(parent=root, title='Choose .xlsx files', 
+                              filetypes=[("Excel files", ".xlsx .xls")])
+# Cleaning root.
+root.destroy()
 
 # Loading in workbook.
 for xlsx_path in xlsx_paths:
@@ -80,7 +98,7 @@ for xlsx_path in xlsx_paths:
                 except KeyError:
                     jobs[follower][training_type][training] = 1
     wb.close()
-                
+
 #-- W R I T I N G   O U T P U T -----------------------------------------------
 # Creating output workbook.
 wb = xl.Workbook()
